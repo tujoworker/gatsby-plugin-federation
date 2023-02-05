@@ -1,0 +1,7 @@
+{
+  "exec": "gatsby build --no-uglify",
+  "ignoreRoot": [".git"],
+  "ignore": ["**/.cache/**", "**/public/**"],
+  "ext": "*.js,*.ts,*.tsx",
+  "watch": "../../node_modules/**/*"
+}

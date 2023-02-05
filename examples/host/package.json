@@ -1,0 +1,22 @@
+{
+  "name": "host",
+  "private": true,
+  "scripts": {
+    "start": "gatsby develop --port 8001",
+    "build": "gatsby build",
+    "watch": "nodemon --config '../../nodemon.json'  --watch './*' --watch '../../packages/gatsby-plugin-federation/*'",
+    "serve": "gatsby serve --port 8001",
+    "clean": "gatsby clean"
+  },
+  "dependencies": {
+    "gatsby": "5.5.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "gatsby-plugin-federation": "workspace:*",
+    "gatsby-plugin-sass": "6.5.0",
+    "nodemon": "2.0.20",
+    "sass": "1.58.0"
+  }
+}

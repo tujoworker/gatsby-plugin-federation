@@ -1,0 +1,45 @@
+{
+  "name": "gatsby-plugin-federation",
+  "version": "1.0.0",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "module-federation",
+    "webpack"
+  ],
+  "description": "Gatsby Plugin for enabling Module Federation",
+  "license": "MIT",
+  "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
+  "main": "dist/gatsby-plugin-federation.cjs.js",
+  "module": "dist/gatsby-plugin-federation.esm.js",
+  "scripts": {
+    "release": "yarn build && npm publish",
+    "build": "preconstruct build",
+    "watch": "preconstruct watch",
+    "test:types": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "postinstall": "preconstruct dev",
+  "prepublish": "yarn build",
+  "exports": {
+    ".": {
+      "module": "./dist/gatsby-plugin-federation.esm.js",
+      "default": "./dist/gatsby-plugin-federation.cjs.js"
+    },
+    "./gatsby-node.js": "./gatsby-node.js",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "gatsby": "*",
+    "react": "*"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "7.18.6",
+    "@babel/preset-typescript": "7.18.6",
+    "@preconstruct/cli": "^2.2.2",
+    "@types/react": "18.0.27",
+    "typescript": "^4.9.4"
+  }
+}
