@@ -13,7 +13,7 @@ const App = () => {
       <h1>Host App</h1>
       <HostButton onClick={handleClick} />{' '}
       <ClientOnly
-        fallback="Loading Button"
+        fallback="Loading..."
         module={RemoteModule}
         props={{
           onClick: handleClick,
