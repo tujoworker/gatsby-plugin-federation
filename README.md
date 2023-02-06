@@ -13,13 +13,13 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
       options: {
         federationConfig: {
           // A. For your Remote
-          name: 'your-host',
+          name: 'my-host',
           exposes: {
             './Button': './src/components/RemoteButton',
           },
 
           // B. For your Host
-          name: 'your-remote',
+          name: 'my-remote',
           remotes: {
             remote: 'remote@http://localhost:8002/remoteEntry.js',
           },
@@ -37,7 +37,7 @@ Because Webpack is using `document` in their Module Federation implementation of
 ```jsx
 import { ClientOnly } from 'gatsby-plugin-federation'
 
-const RemoteModule = () => import('remote/Button')
+const RemoteModule = () => import('my-remote/Button')
 
 render(<ClientOnly fallback="Loading..." module={RemoteModule} props={{}} />)
 ```
@@ -45,7 +45,7 @@ render(<ClientOnly fallback="Loading..." module={RemoteModule} props={{}} />)
 You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
 
 ```jsx
-const RemoteModule = React.lazy(() => import('remote/Button'))
+const RemoteModule = React.lazy(() => import('my-remote/Button'))
 
 const ClientOnly = () => {
   if (typeof document === 'undefined') {
