@@ -6,16 +6,25 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "yarn workspace host start & yarn workspace remote start",
-    "build": "yarn workspace host build & yarn workspace remote build",
+    "watch": "yarn workspace gatsby-plugin-federation watch & yarn workspace host watch & yarn workspace remote watch & yarn serve",
+    "start": "yarn workspace gatsby-plugin-federation watch & yarn workspace host start & yarn workspace remote start",
+    "build": "yarn workspace gatsby-plugin-federation build & yarn workspace host build & yarn workspace remote build",
     "serve": "yarn workspace host serve & yarn workspace remote serve",
     "clean": "yarn workspace host clean & yarn workspace remote clean",
     "release": "yarn workspace gatsby-plugin-federation release"
   },
   "dependencies": {
-    "gatsby": "5.5.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "gatsby": "4.24.4",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "engines": {
+    "node": "18.13.0",
+    "yarn": ">=1.22.10"
+  },
+  "volta": {
+    "node": "18.13.0",
+    "yarn": "1.22.10"
   },
   "packageManager": "yarn@3.4.1"
 }

@@ -1,5 +1,7 @@
 # Gatsby Plugin for enabling Module Federation
 
+This Plugin enables Webpack Module Federation, without any sidecar or special solution.
+
 ## How to use
 
 Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js` file:
@@ -61,12 +63,32 @@ const ClientOnly = () => {
 render(<ClientOnly />)
 ```
 
-## How it works
+# Requirements
 
-It changes some settings in the Webpack config so the Module Federation Webpack Plugin works without throwing an error.
+This plugin requires at least:
+
+- Gatsby v4+ (Webpack v5)
+- React v17+
 
 ## Sharing dependencies
 
-Its not possible to share dependencies as of now. How ever, this plugin does extract React and ReactDOM from the `framework.js` bundle, and adds a version instead of an unique hash. This way, we can share React, when several federated apps run on the same domain.
+Its not possible to share dependencies as of now.
+
+How ever – this plugin does extract React and ReactDOM from the `framework.js` bundle, and creates a junk with a React version, instead of an unique hash. This way, we can share React, when several federated apps run on the same domain.
+
+## Credits
+
+A big thanks to Zack Jackson for originally coming up with Module Federation.
 
 Read more about [Module Federation](https://webpack.js.org/concepts/module-federation/).
+
+## How this Plugin works
+
+It changes some settings in the Webpack config so the Module Federation Webpack Plugin works without throwing an error.
+
+### Development
+
+- clone this repo and run yarn install.
+- run Gatsby in development: `yarn start`
+- or a build i watch mode: `yarn watch`
+- and visit http://localhost:8001/ and http://localhost:8002/
