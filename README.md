@@ -34,7 +34,7 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
 
 ### Importing components
 
-Because Webpack is using `document` in their Module Federation implementation of loading a remote component, we need to ensure, Gatsby's SSR step gets as fallback instead of actually requesting the remote module, and rendering it on the server.
+Because Webpack is using `document` in their Module Federation implementation of loading a remote component, we need to ensure, Gatsby's SSG step gets as fallback instead of actually requesting the remote module, and rendering it on the server.
 
 ```jsx
 import { ClientOnly } from 'gatsby-plugin-federation'
@@ -70,11 +70,15 @@ This plugin requires at least:
 - Gatsby v4+ (Webpack v5)
 - React v17+
 
+Note: Gatsby in SSR or DSG should theoretically work. But where not tested as of now.
+
 ## Sharing dependencies
 
 Its not possible to share dependencies as of now.
 
-How ever – this plugin does extract React and ReactDOM from the `framework.js` bundle, and creates a junk with a React version, instead of an unique hash. This way, we can share React, when several federated apps run on the same domain.
+How ever – this plugin does extract React and ReactDOM from the `framework.js` bundle, and creates a junk with a React version in its name, instead of an unique hash. This way, we can share React, when several federated apps run on the same domain.
+
+That said, sharing dependencies is hard and error prone. Especially when it comes to sharing visual parts shared styling and versioned component libraries.
 
 ## Credits
 
