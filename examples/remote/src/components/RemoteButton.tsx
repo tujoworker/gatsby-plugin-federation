@@ -1,14 +1,29 @@
 import React from 'react'
 import { buttonStyle } from './RemoteButton.module.scss'
 
-const RemoteButton = ({ onClick, text = 'Remote Button' }) => {
-  // React.useEffect(() => {
-  //   console.log('RemoteButton 🙌')
-  // }, [])
+type RemoteButtonProps = {
+  onClick?: () => void
+  text?: string
+}
+
+const RemoteButton = ({ onClick, text }: RemoteButtonProps = {}) => {
+  // Just to see if React Hooks work on the remote
+  React.useEffect(() => {
+    console.log('RemoteButton test 🙌')
+  }, [])
+
+  const [count, setCount] = React.useState(1)
+  const defaultText = React.useMemo(() => `Remote Button ${count}`, [count])
+
+  if (!onClick) {
+    onClick = () => {
+      setCount((s) => s + 1)
+    }
+  }
 
   return (
     <button className={buttonStyle} onClick={onClick}>
-      {text}
+      {text || defaultText}
     </button>
   )
 }

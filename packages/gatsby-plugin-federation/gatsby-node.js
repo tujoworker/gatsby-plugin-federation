@@ -4,68 +4,110 @@ const { container } = require('webpack')
 const { ModuleFederationPlugin } = container
 
 exports.onCreateWebpackConfig = (
-  { stage, getConfig, actions },
+  { store, stage, getConfig, actions },
   { federationConfig }
 ) => {
   const config = getConfig()
 
-  const isHost = federationConfig?.remotes
-  const isRemote = federationConfig?.exposes
+  if (stage === 'build-javascript' || stage === 'develop') {
+    /**
+     * In order to let MF know the correct URL.
+     * Same location as the remoteEntry.js
+     */
+    config.output.publicPath = 'auto'
+  }
 
   if (stage === 'build-javascript' || stage === 'develop') {
-    if (isRemote) {
+    if (config.optimization.splitChunks.chunks === 'all') {
       /**
-       * In order to make "ModuleFederationPlugin" to include "exposes" in "remoteEntry.js"
+       * Make it possible for the host to load shared chunks from remoteEntry.js
+       *
+       * When NOT in eager mode, then we need only this to be async,
+       * given that the "app.js" and "production-app.js" is imported in a async boundary.
        */
-      config.optimization.runtimeChunk = false
-
-      /**
-       * In order to let MF know the correct URL.
-       * Same location as the remoteEntry.js
-       */
-      config.output.publicPath = 'auto'
+      config.optimization.splitChunks.chunks = 'async'
     }
   }
 
-  if (isRemote && stage === 'develop') {
+  /**
+   * Rename the app entry to use our own async boundary loader
+   */
+  if (stage === 'build-javascript') {
+    config.entry.app = config.entry.app.replace(/app$/, 'app-loader')
+  }
+  if (stage === 'develop') {
+    config.entry.commons = config.entry.commons.map((name) => {
+      return name.replace(/app$/, 'app-loader')
+    })
+  }
+
+  if (
+    federationConfig.remotes &&
+    (stage === 'build-html' || stage === 'develop-html')
+  ) {
+    Object.keys(federationConfig.remotes).forEach((remote) => {
+      config.resolve.alias[remote] = false
+    })
+  }
+
+  if (stage === 'build-javascript' || stage === 'develop') {
+    const { dependencies } = getPackageJson({ store })
+
+    const { shared: sharedConfig, ...restConfig } = federationConfig
+
+    // Don't share all deps by default
+    const shared = { ...sharedConfig }
+
+    shared.react = {
+      singleton: true,
+      requiredVersion: dependencies['react'],
+    }
+    shared['react-dom'] = {
+      singleton: true,
+      requiredVersion: dependencies['react-dom'],
+    }
+    shared['@gatsbyjs/reach-router'] = {
+      singleton: true,
+      requiredVersion: false,
+    }
+    // shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
+    //   singleton: true,
+    //   requiredVersion: false,
+    // }
+
+    config.plugins.push(
+      new ModuleFederationPlugin({
+        ...restConfig,
+
+        shared,
+        filename: 'remoteEntry.js',
+
+        /**
+         * It should ensure the remote entry is a full copy of the webpack runtime,
+         * not just 2 functinos and needs another file for the base webpack runtime.
+         */
+        runtime: false,
+      })
+    )
+  }
+
+  if (stage === 'develop' && federationConfig?.exposes) {
     /**
      * During the develop stage, the junk name "commons" in "styles" colides,
      * with the one from JS:
-     * Cache group "styles" conflicts with existing chunk.
-     * Both have the same name "commons" and existing chunk is not a parent
-     * of the selected modules.
+     * > Cache group "styles" conflicts with existing chunk.
+     * > Both have the same name "commons" and existing chunk is not a parent
+     * > of the selected modules.
+     * When we remove the name, it creates its own.
      */
     if (config.optimization.splitChunks.cacheGroups.styles?.name) {
       delete config.optimization.splitChunks.cacheGroups.styles.name
     }
   }
 
-  if (
-    stage === 'build-html' ||
-    stage === 'build-javascript' ||
-    (stage === 'develop-html' && isHost) ||
-    stage === 'develop'
-  ) {
-    config.plugins.push(
-      new ModuleFederationPlugin({
-        filename: 'remoteEntry.js',
-        /**
-         * NB: sharing deps do not work,
-         * because MF wants then to create its own junks,
-         * while gatsby has its UX enhances junks.
-         */
-        // shared: {
-        //   react: { singleton: true },
-        //   'react-dom': { singleton: true },
-        // },
-        ...federationConfig,
-      })
-    )
-  }
-
   /**
    * This part extracts React + ReactDOM to its own junk, with a version nunmber instead of a random hash.
-   * This way, React can be shared, when MF is run on the same domain.
+   * For the user, it means, this file will be cached locally, even if a prod build gets a new hash.
    */
   if (stage === 'build-javascript') {
     const origFilename =
@@ -103,9 +145,20 @@ exports.onCreateWebpackConfig = (
   actions.replaceWebpackConfig(config)
 }
 
+exports.onPreBootstrap = ({ store }) => {
+  const state = store.getState()
+  const cacheDir = path.join(state.program.directory, '.cache')
+  const files = ['app-loader.js', 'production-app-loader.js']
+
+  for (const file of files) {
+    const srcAppFile = path.resolve(__dirname, 'async-boundaries', file)
+    const destAppFile = path.join(cacheDir, file)
+    fs.copyFileSync(srcAppFile, destAppFile)
+  }
+}
+
 exports.onCreateDevServer = ({ store }, { federationConfig }) => {
-  const isRemote = federationConfig?.exposes
-  if (isRemote) {
+  if (federationConfig?.exposes) {
     const state = store.getState()
     const publicDir = path.join(state.program.directory, 'public')
     const commonsFile = path.join(publicDir, 'commons.css')
@@ -118,4 +171,26 @@ exports.onCreateDevServer = ({ store }, { federationConfig }) => {
       fs.writeFileSync(commonsFile, '', 'utf8')
     }
   }
+}
+
+let packageJsonCache = null
+function getPackageJson({ store }) {
+  if (packageJsonCache) {
+    return packageJsonCache
+  }
+
+  const state = store.getState()
+  const packageJsonFile = path.join(state.program.directory, 'package.json')
+
+  if (fs.existsSync(packageJsonFile)) {
+    /**
+     * Create a dummy file,
+     * because we did delete "styles" from the cacheGroup, we get a random
+     */
+    return (packageJsonCache = JSON.parse(
+      fs.readFileSync(packageJsonFile, 'utf8')
+    ))
+  }
+
+  return {}
 }

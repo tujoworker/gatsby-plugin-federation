@@ -6,13 +6,9 @@ const App = () => {
     <>
       <h1>Remote App</h1>
 
-      <LocalButton onClick={onClick} />
+      <LocalButton />
     </>
   )
-
-  function onClick(e) {
-    console.log(e)
-  }
 }
 
 export default App

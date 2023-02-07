@@ -14,25 +14,18 @@ const App = () => {
   return (
     <>
       <h1>Host App</h1>
-      <HostButton onClick={handleClick} /> <ClientOnly /> Check out the{' '}
-      <Link to="/">ClientOnly</Link> solution.
+      <HostButton onClick={handleClick} />
+      <React.Suspense fallback="loading...">
+        {React.isValidElement(RemoteComponent) && (
+          <RemoteComponent
+            text={`Remote Button ${count} 🙌`}
+            onClick={handleClick}
+          />
+        )}
+      </React.Suspense>
+      Check out the <Link to="/">ClientOnly</Link> solution.
     </>
   )
-
-  function ClientOnly() {
-    if (typeof document === 'undefined') {
-      return <>loading...</>
-    }
-
-    return (
-      <React.Suspense fallback="loading...">
-        <RemoteComponent
-          text={`Remote Button ${count} 🙌`}
-          onClick={handleClick}
-        />
-      </React.Suspense>
-    )
-  }
 
   function handleClick(e) {
     console.log('onClick', e)

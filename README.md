@@ -32,16 +32,14 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
 }
 ```
 
-### Importing components
-
-Because Webpack is using `document` in their Module Federation implementation of loading a remote component, we need to ensure, Gatsby's SSG step gets as fallback instead of actually requesting the remote module, and rendering it on the server.
+### Importing federated modules or components
 
 ```jsx
 import { ClientOnly } from 'gatsby-plugin-federation'
 
 const RemoteModule = () => import('my-remote/Button')
 
-render(<ClientOnly fallback="Loading..." module={RemoteModule} props={{}} />)
+render(<ClientOnly module={RemoteModule} fallback="Loading..." props={{}} />)
 ```
 
 You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
@@ -49,18 +47,11 @@ You could use the vanilla method of importing the shared component, but you woul
 ```jsx
 const RemoteModule = React.lazy(() => import('my-remote/Button'))
 
-const ClientOnly = () => {
-  if (typeof document === 'undefined') {
-    return <>loading...</>
-  }
-  return (
-    <React.Suspense fallback="loading...">
-      <RemoteModule />
-    </React.Suspense>
-  )
-}
-
-render(<ClientOnly />)
+render(
+  <React.Suspense fallback="loading...">
+    {React.isValidElement(RemoteModule) && <RemoteModule {...(props = {})} />}
+  </React.Suspense>
+)
 ```
 
 # Requirements
@@ -72,17 +63,15 @@ This plugin requires at least:
 
 Note: Gatsby in SSR or DSG should theoretically work. But where not tested as of now.
 
-## Sharing dependencies
+## Client side only - no SSG support
 
-Its not possible to share dependencies as of now.
+Right now, your server generated HTML will not be able to load a federated module. How ever, in future we may add this to this plugin as well. Let me know if you need it.
 
-How ever – this plugin does extract React and ReactDOM from the `framework.js` bundle, and creates a junk with a React version in its name, instead of an unique hash. This way, we can share React, when several federated apps run on the same domain.
-
-That said, sharing dependencies is hard and error prone. Especially when it comes to sharing visual parts shared styling and versioned component libraries.
+Background: Because Webpack is using `document` in their Module Federation implementation of loading a remote component, we need to ensure, Gatsby's SSG step gets as fallback instead of actually requesting the remote module, and rendering it on the server.
 
 ## Credits
 
-A big thanks to Zack Jackson for originally coming up with Module Federation.
+A big thanks to [Zack Jackson](https://twitter.com/ScriptedAlchemy) for originally coming up with Module Federation.
 
 Read more about [Module Federation](https://webpack.js.org/concepts/module-federation/).
 
