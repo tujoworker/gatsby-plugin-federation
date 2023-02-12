@@ -13,11 +13,6 @@
     "clean": "yarn workspace host clean & yarn workspace remote clean",
     "release": "yarn workspace gatsby-plugin-federation release"
   },
-  "dependencies": {
-    "gatsby": "4.24.4",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
-  },
   "engines": {
     "node": "18.13.0",
     "yarn": ">=1.22.10"
