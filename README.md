@@ -47,11 +47,18 @@ You could use the vanilla method of importing the shared component, but you woul
 ```jsx
 const RemoteModule = React.lazy(() => import('my-remote/Button'))
 
-render(
-  <React.Suspense fallback="loading...">
-    {React.isValidElement(RemoteModule) && <RemoteModule {...(props = {})} />}
-  </React.Suspense>
-)
+const ClientOnly = () => {
+  if (typeof document === 'undefined') {
+    return <>loading...</>
+  }
+  return (
+    <React.Suspense fallback="loading...">
+      <RemoteModule />
+    </React.Suspense>
+  )
+}
+
+render(<ClientOnly />)
 ```
 
 # Requirements
