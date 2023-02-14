@@ -8,31 +8,31 @@ const RemoteComponent: LazyComponentType = React.lazy(
   () => import('remote/Button')
 )
 
+function ClientOnly(props) {
+  const loading = <p role="status">Loading...</p>
+
+  if (typeof document === 'undefined') {
+    return loading
+  }
+
+  return (
+    <React.Suspense fallback={loading}>
+      <RemoteComponent {...props} />
+    </React.Suspense>
+  )
+}
+
 const App = () => {
   const [count, setCount] = React.useState(1)
 
   return (
     <>
       <h1>Host App</h1>
-      <HostButton onClick={handleClick} /> <ClientOnly /> Check out the{' '}
-      <Link to="/">ClientOnly</Link> solution.
+      <HostButton onClick={handleClick} />{' '}
+      <ClientOnly text={`Remote Button ${count} 🙌`} onClick={handleClick} />{' '}
+      Check out the <Link to="/">ClientOnly</Link> solution.
     </>
   )
-
-  function ClientOnly() {
-    if (typeof document === 'undefined') {
-      return <>loading...</>
-    }
-
-    return (
-      <React.Suspense fallback="loading...">
-        <RemoteComponent
-          text={`Remote Button ${count} 🙌`}
-          onClick={handleClick}
-        />
-      </React.Suspense>
-    )
-  }
 
   function handleClick(e) {
     console.log('onClick', e)
