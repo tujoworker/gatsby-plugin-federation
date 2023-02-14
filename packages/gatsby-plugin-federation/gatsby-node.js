@@ -1,11 +1,15 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
+const { UniversalFederationPlugin } = require('@module-federation/node')
 const { container } = require('webpack')
 const { ModuleFederationPlugin } = container
 
+const filename = 'remoteEntry.js'
+const ssrDir = 'mf-ssr'
+
 exports.onCreateWebpackConfig = (
-  { store, stage, getConfig, actions },
-  { federationConfig }
+  { store, stage, getConfig, plugins, actions },
+  { ssr, federationConfig }
 ) => {
   const config = getConfig()
 
@@ -45,49 +49,90 @@ exports.onCreateWebpackConfig = (
     })
   }
 
-  if (
-    federationConfig.remotes &&
-    (stage === 'build-html' || stage === 'develop-html')
-  ) {
-    /**
-     * Ensure we alias the imports during SSR, when ssr=false in config
-     */
-    Object.keys(federationConfig.remotes).forEach((remote) => {
-      config.resolve.alias[remote] = false
-    })
+  const { dependencies } = getPackageJson({ store })
+
+  const { shared: sharedConfig, ...restConfig } = federationConfig
+
+  // Don't share all deps by default
+  const shared = { ...sharedConfig }
+
+  shared.react = {
+    singleton: true,
+    requiredVersion: dependencies['react'],
+    // eager: ssr,// not supported in SSR as of now
   }
+  shared['react-dom'] = {
+    singleton: true,
+    requiredVersion: dependencies['react-dom'],
+    // eager: ssr,// not supported in SSR as of now
+  }
+  shared['@gatsbyjs/reach-router'] = {
+    singleton: true,
+    requiredVersion: false,
+    // eager: ssr,// not supported in SSR as of now
+  }
+  // shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
 
-  if (stage === 'build-javascript' || stage === 'develop') {
-    const { dependencies } = getPackageJson({ store })
-
-    const { shared: sharedConfig, ...restConfig } = federationConfig
-
-    // Don't share all deps by default
-    const shared = { ...sharedConfig }
-
-    shared.react = {
-      singleton: true,
-      requiredVersion: dependencies['react'],
+  if (stage === 'build-html' || stage === 'develop-html') {
+    if (restConfig.remotes) {
+      if (ssr && stage === 'build-html') {
+        for (const remote in restConfig.remotes) {
+          restConfig.remotes[remote] = joinUrl(
+            restConfig.remotes[remote].replace(filename, ''),
+            ssrDir,
+            filename
+          )
+        }
+      } else {
+        /**
+         * Ensure we alias the imports during SSR, when ssr=false in config
+         */
+        Object.keys(restConfig.remotes).forEach((remote) => {
+          config.resolve.alias[remote] = false
+        })
+      }
     }
-    shared['react-dom'] = {
-      singleton: true,
-      requiredVersion: dependencies['react-dom'],
+
+    if (ssr && stage === 'build-html') {
+      // Remove parts we do not need
+      config.target = false
+
+      config.plugins.push(
+        new UniversalFederationPlugin({
+          ...restConfig,
+
+          isServer: true,
+          shared: undefined, // not supported in SSR as of now
+          filename,
+          library: { type: 'commonjs-module' },
+
+          /**
+           * It should ensure the remote entry is a full copy of the webpack runtime,
+           * not just 2 functinos and needs another file for the base webpack runtime.
+           */
+          runtime: false,
+        })
+      )
     }
-    shared['@gatsbyjs/reach-router'] = {
-      singleton: true,
-      requiredVersion: false,
+  } else if (stage === 'build-javascript' || stage === 'develop') {
+    if (restConfig.remotes) {
+      for (const remote in restConfig.remotes) {
+        restConfig.remotes[remote] = joinUrl(
+          restConfig.remotes[remote].replace(filename, ''),
+          filename
+        )
+      }
     }
-    // shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
-    //   singleton: true,
-    //   requiredVersion: false,
-    // }
 
     config.plugins.push(
       new ModuleFederationPlugin({
         ...restConfig,
 
         shared,
-        filename: 'remoteEntry.js',
+        filename,
 
         /**
          * It should ensure the remote entry is a full copy of the webpack runtime,
@@ -97,6 +142,12 @@ exports.onCreateWebpackConfig = (
       })
     )
   }
+
+  config.plugins.push(
+    plugins.define({
+      'globalThis.MF_SSR': ssr,
+    })
+  )
 
   if (stage === 'develop' && federationConfig?.exposes) {
     /**
@@ -152,6 +203,59 @@ exports.onCreateWebpackConfig = (
   actions.replaceWebpackConfig(config)
 }
 
+exports.onCreateDevServer = ({ store }, { federationConfig }) => {
+  if (federationConfig?.exposes) {
+    const state = store.getState()
+    const publicDir = path.join(state.program.directory, 'public')
+    const commonsFile = path.join(publicDir, 'commons.css')
+
+    if (!fs.existsSync(commonsFile)) {
+      /**
+       * Create a dummy file,
+       * because we did delete "styles" from the cacheGroup, we get a random
+       */
+      fs.writeFileSync(commonsFile, '', 'utf8')
+    }
+  }
+}
+
+exports.onPostBuild = ({ store }, { ssr, federationConfig }) => {
+  if (ssr && federationConfig?.exposes) {
+    const state = store.getState()
+    const srcDir = path.join(state.program.directory, '.cache/page-ssr/routes')
+    const publicDir = path.join(state.program.directory, 'public')
+    const destDir = path.join(publicDir, ssrDir)
+
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir)
+    }
+
+    fs.copySync(srcDir, destDir, { overwrite: true })
+  }
+}
+
+let packageJsonCache = null
+function getPackageJson({ store }) {
+  if (packageJsonCache) {
+    return packageJsonCache
+  }
+
+  const state = store.getState()
+  const packageJsonFile = path.join(state.program.directory, 'package.json')
+
+  if (fs.existsSync(packageJsonFile)) {
+    /**
+     * Create a dummy file,
+     * because we did delete "styles" from the cacheGroup, we get a random
+     */
+    return (packageJsonCache = JSON.parse(
+      fs.readFileSync(packageJsonFile, 'utf8')
+    ))
+  }
+
+  return {}
+}
+
 function createAsyncBoundaryEntry({ entry, store }) {
   const state = store.getState()
   const cacheDir = path.join(state.program.directory, '.cache')
@@ -177,40 +281,9 @@ function createAsyncBoundaryEntry({ entry, store }) {
   return isArray ? asyncEntries : asyncEntries[0]
 }
 
-exports.onCreateDevServer = ({ store }, { federationConfig }) => {
-  if (federationConfig?.exposes) {
-    const state = store.getState()
-    const publicDir = path.join(state.program.directory, 'public')
-    const commonsFile = path.join(publicDir, 'commons.css')
-
-    if (!fs.existsSync(commonsFile)) {
-      /**
-       * Create a dummy file,
-       * because we did delete "styles" from the cacheGroup, we get a random
-       */
-      fs.writeFileSync(commonsFile, '', 'utf8')
-    }
-  }
-}
-
-let packageJsonCache = null
-function getPackageJson({ store }) {
-  if (packageJsonCache) {
-    return packageJsonCache
-  }
-
-  const state = store.getState()
-  const packageJsonFile = path.join(state.program.directory, 'package.json')
-
-  if (fs.existsSync(packageJsonFile)) {
-    /**
-     * Create a dummy file,
-     * because we did delete "styles" from the cacheGroup, we get a random
-     */
-    return (packageJsonCache = JSON.parse(
-      fs.readFileSync(packageJsonFile, 'utf8')
-    ))
-  }
-
-  return {}
+function joinUrl(...urls) {
+  return urls
+    .join('/')
+    .replace(/\/{1,}/g, '/')
+    .replace(/:\//g, '://')
 }

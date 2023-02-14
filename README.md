@@ -2,6 +2,8 @@
 
 This Plugin enables Webpack Module Federation, without any sidecar or special solution.
 
+- Supports SSG/SSR – streaming modules during build time (`ssr: true`)
+
 ## How to use
 
 Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js` file:
@@ -13,6 +15,7 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
     {
       resolve: 'gatsby-plugin-federation',
       options: {
+        ssr: false, // If true, the remotes will be requested during SSG (SSR)
         federationConfig: {
           // A. For your Remote
           name: 'my-host',
@@ -23,7 +26,7 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
           // B. For your Host
           name: 'my-remote',
           remotes: {
-            remote: 'remote@http://localhost:8002/remoteEntry.js',
+            remote: 'remote@http://localhost:8002/', // The location of the /public dir content
           },
         },
       },
@@ -35,11 +38,11 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
 ### Importing federated modules or components
 
 ```jsx
-import { ClientOnly } from 'gatsby-plugin-federation'
+import { Dynamic } from 'gatsby-plugin-federation'
 
 const RemoteModule = () => import('my-remote/Button')
 
-render(<ClientOnly module={RemoteModule} fallback="Loading..." props={{}} />)
+render(<Dynamic module={RemoteModule} fallback="Loading..." props={{}} />)
 ```
 
 You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
@@ -47,8 +50,8 @@ You could use the vanilla method of importing the shared component, but you woul
 ```jsx
 const RemoteModule = React.lazy(() => import('my-remote/Button'))
 
-const ClientOnly = () => {
-  if (typeof document === 'undefined') {
+const CustomDynamic = () => {
+  if (!globalThis.MF_SSR && typeof document === 'undefined') {
     return <>loading...</>
   }
   return (
@@ -58,7 +61,7 @@ const ClientOnly = () => {
   )
 }
 
-render(<ClientOnly />)
+render(<CustomDynamic />)
 ```
 
 # Requirements
@@ -67,14 +70,6 @@ This plugin requires at least:
 
 - Gatsby v4+ (Webpack v5)
 - React v17+
-
-Note: Gatsby in SSR or DSG should theoretically work. But where not tested as of now.
-
-## Client side only - no SSG support
-
-Right now, your server generated HTML will not be able to load a federated module. How ever, in future we may add this to this plugin as well. Let me know if you need it.
-
-Background: Because Webpack is using `document` in their Module Federation implementation of loading a remote component, we need to ensure, Gatsby's SSG step gets as fallback instead of actually requesting the remote module, and rendering it on the server.
 
 ## Credits
 

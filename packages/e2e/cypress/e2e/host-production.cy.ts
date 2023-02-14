@@ -15,9 +15,14 @@ describe('host-html', () => {
     cy.get('button[class*="HostButton"]').contains('Local Host Button')
   })
 
-  it('should contain fallback state', () => {
-    cy.get('p[role="status"]').contains('Loading...')
+  it('should contain remote button', () => {
+    cy.get('button[class*="RemoteButton"]').contains('Remote Button 1')
   })
+
+  // For when no SSR is used:
+  // it('should contain fallback state', () => {
+  //   cy.get('p[role="status"]').contains('Loading...')
+  // })
 })
 
 describe('host-hydration /vanilla', () => {
@@ -57,9 +62,14 @@ describe('host-html /vanilla', () => {
     cy.get('button[class*="HostButton"]').contains('Local Host Button')
   })
 
-  it('should contain fallback state', () => {
-    cy.get('p[role="status"]').contains('Loading...')
+  it('should contain remote button', () => {
+    cy.get('button[class*="RemoteButton"]').contains('Remote Button 1')
   })
+
+  // For when no SSR is used:
+  // it('should contain fallback state', () => {
+  //   cy.get('p[role="status"]').contains('Loading...')
+  // })
 })
 
 describe('host-hydration /vanilla', () => {

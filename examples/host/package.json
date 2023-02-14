@@ -14,7 +14,6 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "gatsby-plugin-federation": "*",
     "gatsby-plugin-sass": "6.5.0",
     "nodemon": "2.0.20",
     "sass": "1.58.0"

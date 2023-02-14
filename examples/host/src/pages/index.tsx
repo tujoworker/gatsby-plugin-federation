@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'gatsby'
-import { ClientOnly } from 'gatsby-plugin-federation'
+import { Dynamic } from 'gatsby-plugin-federation'
 import HostButton from '../components/HostButton'
 
 const RemoteModule = () => import('remote/Button')
@@ -12,7 +12,7 @@ const App = () => {
     <>
       <h1>Host App</h1>
       <HostButton onClick={handleClick} />{' '}
-      <ClientOnly
+      <Dynamic
         fallback={<p role="status">Loading...</p>}
         module={RemoteModule}
         props={{

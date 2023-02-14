@@ -8,10 +8,10 @@ const RemoteComponent: LazyComponentType = React.lazy(
   () => import('remote/Button')
 )
 
-function ClientOnly(props) {
+function Dynamic(props) {
   const loading = <p role="status">Loading...</p>
 
-  if (typeof document === 'undefined') {
+  if (!globalThis.MF_SSR && typeof document === 'undefined') {
     return loading
   }
 
@@ -29,8 +29,8 @@ const App = () => {
     <>
       <h1>Host App</h1>
       <HostButton onClick={handleClick} />{' '}
-      <ClientOnly text={`Remote Button ${count} 🙌`} onClick={handleClick} />{' '}
-      Check out the <Link to="/">ClientOnly</Link> solution.
+      <Dynamic text={`Remote Button ${count} 🙌`} onClick={handleClick} /> Check
+      out the <Link to="/">Dynamic</Link> solution.
     </>
   )
 

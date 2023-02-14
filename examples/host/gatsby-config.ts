@@ -4,10 +4,11 @@ export default {
     {
       resolve: 'gatsby-plugin-federation',
       options: {
+        ssr: true,
         federationConfig: {
           name: 'host',
           remotes: {
-            remote: 'remote@http://localhost:8002/remoteEntry.js',
+            remote: 'remote@http://localhost:8002/',
           },
         },
       },
