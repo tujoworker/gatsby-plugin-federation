@@ -4,7 +4,7 @@
   "scripts": {
     "start": "gatsby develop --port 8001",
     "build": "gatsby build",
-    "watch": "nodemon --config '../../nodemon.json'  --watch './*' --watch '../../packages/gatsby-plugin-federation/*'",
+    "watch": "nodemon --config '../../nodemon.json'  --watch './*' --watch '../../packages/gatsby-plugin-federation/*' --watch '../../node_modules/gatsby/**/*'",
     "serve": "gatsby serve --port 8001",
     "clean": "gatsby clean"
   },
