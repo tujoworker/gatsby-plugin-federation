@@ -7,7 +7,7 @@
   "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
   "scripts": {
     "start": "cypress open",
-    "test:ci": "yarn test:develop && yarn test:production",
+    "test:ci": "yarn workspace gatsby-plugin-federation build && yarn test:develop && yarn test:production",
     "host:develop": "yarn workspace host start",
     "host:production": "yarn workspace host build && yarn workspace host serve",
     "remote:develop": "yarn workspace remote start",
