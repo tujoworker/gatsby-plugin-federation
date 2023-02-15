@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [ubuntu-latest] # other OSes are not needed at the moment [ubuntu-latest, macos-latest, windows-latest]
+        platform: [ubuntu-latest, windows-latest] # other OSes are not needed at the moment [ubuntu-latest, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.platform }}
 
