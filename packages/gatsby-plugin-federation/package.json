@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-federation",
-  "version": "1.2.0",
+  "version": "0.0.0-development",
   "keywords": [
     "gatsby",
     "gatsby-plugin",
@@ -10,6 +10,13 @@
   "description": "Gatsby Plugin for enabling Module Federation",
   "license": "MIT",
   "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dnbexperience/gatsby-plugin-federation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dnbexperience/gatsby-plugin-federation/issues"
+  },
   "main": "dist/gatsby-plugin-federation.cjs.js",
   "module": "dist/gatsby-plugin-federation.esm.js",
   "scripts": {
@@ -31,6 +38,12 @@
     },
     "./gatsby-node.js": "./gatsby-node.js",
     "./package.json": "./package.json"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next"
+    ]
   },
   "peerDependencies": {
     "gatsby": ">=4",

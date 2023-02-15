@@ -8391,7 +8391,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-federation@workspace:*, gatsby-plugin-federation@workspace:packages/gatsby-plugin-federation":
+"gatsby-plugin-federation@npm:*":
+  version: 1.2.0
+  resolution: "gatsby-plugin-federation@npm:1.2.0"
+  peerDependencies:
+    gatsby: ">=4"
+    react: ">=17"
+  checksum: 7bc37f94a3f8a65500c65666b5bcb69ca88ad0fdd755f538a9a238342d0be48ee0742be4180d4f5b228cba5eb9ee88fe4fc5430ba62b1913d00abd5ba1133dd0
+  languageName: node
+  linkType: hard
+
+"gatsby-plugin-federation@workspace:packages/gatsby-plugin-federation":
   version: 0.0.0-use.local
   resolution: "gatsby-plugin-federation@workspace:packages/gatsby-plugin-federation"
   dependencies:
@@ -9240,7 +9250,7 @@ __metadata:
   resolution: "host@workspace:examples/host"
   dependencies:
     gatsby: 5.5.0
-    gatsby-plugin-federation: "workspace:*"
+    gatsby-plugin-federation: "*"
     gatsby-plugin-sass: 6.5.0
     nodemon: 2.0.20
     react: 18.2.0
@@ -14345,7 +14355,7 @@ __metadata:
   resolution: "remote@workspace:examples/remote"
   dependencies:
     gatsby: 5.5.0
-    gatsby-plugin-federation: "workspace:*"
+    gatsby-plugin-federation: "*"
     gatsby-plugin-sass: 6.5.0
     nodemon: 2.0.20
     react: 18.2.0
