@@ -33,11 +33,15 @@ exports.onCreateWebpackConfig = (
    * Rename the app entry to use our own async boundary loader
    */
   if (stage === 'build-javascript') {
-    config.entry.app = config.entry.app.replace(/app$/, 'app-loader')
+    config.entry.app = createAsyncBoundaryEntry({
+      entry: config.entry.app,
+      store,
+    })
   }
   if (stage === 'develop') {
-    config.entry.commons = config.entry.commons.map((name) => {
-      return name.replace(/app$/, 'app-loader')
+    config.entry.commons = createAsyncBoundaryEntry({
+      entry: config.entry.commons,
+      store,
     })
   }
 
@@ -45,6 +49,9 @@ exports.onCreateWebpackConfig = (
     federationConfig.remotes &&
     (stage === 'build-html' || stage === 'develop-html')
   ) {
+    /**
+     * Ensure we alias the imports during SSR, when ssr=false in config
+     */
     Object.keys(federationConfig.remotes).forEach((remote) => {
       config.resolve.alias[remote] = false
     })
@@ -145,16 +152,29 @@ exports.onCreateWebpackConfig = (
   actions.replaceWebpackConfig(config)
 }
 
-exports.onPreBootstrap = ({ store }) => {
+function createAsyncBoundaryEntry({ entry, store }) {
   const state = store.getState()
   const cacheDir = path.join(state.program.directory, '.cache')
-  const files = ['app-loader.js', 'production-app-loader.js']
+  const isArray = Array.isArray(entry)
+  const entries = isArray ? entry : [entry]
+  const nameRegExp = '[\\/\\\\]([^/]*)$'
 
-  for (const file of files) {
-    const srcAppFile = path.resolve(__dirname, 'async-boundaries', file)
-    const destAppFile = path.join(cacheDir, file)
-    fs.copyFileSync(srcAppFile, destAppFile)
+  const createFile = (file) => {
+    const name = file.match(new RegExp('.*' + nameRegExp))[1]
+    const destAppFile = path.join(cacheDir, `${name}-loader.js`)
+    fs.writeFileSync(destAppFile, `import('./${name}.js')`, 'utf8')
   }
+
+  const renameEntry = (file) => {
+    return file.replace(new RegExp(nameRegExp), '/$1-loader')
+  }
+
+  const asyncEntries = entries.map((file) => {
+    createFile(file)
+    return renameEntry(file)
+  })
+
+  return isArray ? asyncEntries : asyncEntries[0]
 }
 
 exports.onCreateDevServer = ({ store }, { federationConfig }) => {
