@@ -1,0 +1,74 @@
+name: e2e # NB: The name is used in workflow_run
+
+on:
+  push:
+    branches: [main, beta, chore/*, fix/*, ftr/*]
+  pull_request:
+    types: [opened]
+    branches: [main, beta]
+
+jobs:
+  build:
+    name: e2e tests
+
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest] # other OSes are not needed at the moment [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    env:
+      CYPRESS_CACHE_FOLDER: ~/.cache/Cypress
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+
+      - name: Deps cache
+        uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ./.yarn/cache
+          key: deps-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Gatsby cache
+        uses: actions/cache@v3
+        id: gatsby-cache
+        with:
+          path: |
+            ./examples/host/.cache
+            ./examples/host/public
+            ./examples/remote/.cache
+            ./examples/remote/public
+          key: gatsby-${{ runner.os }}
+
+      - name: Cypress cache
+        uses: actions/cache@v3
+        id: cypress-binary-cache
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install deps
+        run: yarn install --immutable
+
+      - name: Install Cypress
+        if: steps.cypress-binary-cache.outputs.cache-hit != 'true'
+        run: yarn workspace e2e cypress install
+
+      - name: Build
+        run: yarn workspace gatsby-plugin-federation build
+
+      - name: Cypress run
+        run: yarn workspace e2e test:ci
+
+      - name: Store e2e artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: e2e-artifact
+          path: ./packages/e2e/cypress

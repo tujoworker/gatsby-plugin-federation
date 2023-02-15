@@ -13,7 +13,8 @@
   "main": "dist/gatsby-plugin-federation.cjs.js",
   "module": "dist/gatsby-plugin-federation.esm.js",
   "scripts": {
-    "release": "yarn build && npm publish",
+    "release": "yarn build && semantic-release",
+    "release:dry": "semantic-release --dry-run",
     "build": "preconstruct build",
     "watch": "preconstruct watch",
     "test:types": "tsc --noEmit"
@@ -40,6 +41,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@preconstruct/cli": "^2.2.2",
     "@types/react": "18.0.27",
+    "semantic-release": "20.1.0",
     "typescript": "^4.9.4"
   }
 }

@@ -1,0 +1,43 @@
+name: NPM
+
+on:
+  workflow_run:
+    workflows: ['Cypress']
+    branches: [main, beta]
+    types:
+      - completed
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.1.0
+
+      - name: Use deps cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ./.yarn/cache
+          key: deps-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install deps
+        run: yarn install --immutable
+
+      - name: Set git config
+        run: |
+          git config --global user.name 'Tobias Høegh'
+          git config --global user.email 'tobias@tujo.no'
+
+      - name: Publish to NPM
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn workspace gatsby-plugin-federation release
