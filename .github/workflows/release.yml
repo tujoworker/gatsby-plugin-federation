@@ -2,7 +2,7 @@ name: NPM
 
 on:
   workflow_run:
-    workflows: ['Cypress']
+    workflows: ['e2e']
     branches: [main, beta]
     types:
       - completed
