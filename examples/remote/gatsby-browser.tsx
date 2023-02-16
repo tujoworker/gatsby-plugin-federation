@@ -11,7 +11,7 @@ export const wrapRootElement = ({ element }) => {
 
 const Mounted = () => {
   React.useEffect(() => {
-    document.documentElement.setAttribute('data-is-mounted', '1')
+    document.documentElement.setAttribute('data-remote-mounted', '1')
   })
   return null
 }

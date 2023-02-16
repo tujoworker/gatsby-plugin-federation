@@ -1,10 +1,10 @@
-import { HostHtmlNoSSR, HostHydration } from './SharedHostTests'
+import { HostHtmlNoSSR, HostHydration } from './shared-tests/host-production'
 
 Cypress.config({
   baseUrl: 'http://localhost:8001/',
 })
 
-describe('host-html', () => {
+describe('host-disabled-ssr html', () => {
   beforeEach(() => {
     cy.visitAsHtml('/')
   })
@@ -12,13 +12,13 @@ describe('host-html', () => {
   HostHtmlNoSSR()
 })
 
-describe('host-hydration', () => {
+describe('host-disabled-ssr hydration', () => {
   beforeEach(() => {
     cy.visit('/')
 
     cy.get('html', { timeout: 10000 }).should(
       'have.attr',
-      'data-is-mounted',
+      'data-host-mounted',
       '1'
     )
   })
@@ -26,7 +26,7 @@ describe('host-hydration', () => {
   HostHydration()
 })
 
-describe('host-html /vanilla', () => {
+describe('host-disabled-ssr html /vanilla', () => {
   beforeEach(() => {
     cy.visitAsHtml('/vanilla')
   })
@@ -34,13 +34,13 @@ describe('host-html /vanilla', () => {
   HostHtmlNoSSR()
 })
 
-describe('host-hydration /vanilla', () => {
+describe('host-disabled-ssr hydration /vanilla', () => {
   beforeEach(() => {
     cy.visit('/vanilla')
 
     cy.get('html', { timeout: 10000 }).should(
       'have.attr',
-      'data-is-mounted',
+      'data-host-mounted',
       '1'
     )
   })
