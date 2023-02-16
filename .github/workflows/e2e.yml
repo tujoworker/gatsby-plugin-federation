@@ -2,7 +2,7 @@ name: e2e # NB: The name is used in workflow_run
 
 on:
   push:
-    branches: [main, beta, chore/*, fix/*, ftr/*]
+    branches: [main, beta, chore/*, fix/*, feat/*]
   pull_request:
     types: [opened]
     branches: [main, beta]
