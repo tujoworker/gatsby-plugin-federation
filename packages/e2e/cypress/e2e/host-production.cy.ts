@@ -12,9 +12,9 @@ describe('host-html', () => {
   HostHtmlSSR()
 })
 
-describe('host-hydration /vanilla', () => {
+describe('host-hydration', () => {
   beforeEach(() => {
-    cy.visit('/vanilla')
+    cy.visit('/')
 
     cy.get('html', { timeout: 10000 }).should(
       'have.attr',
