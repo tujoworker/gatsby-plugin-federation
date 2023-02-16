@@ -1,0 +1,54 @@
+name: e2e-develop # NB: The name is used in workflow_run
+
+on:
+  push:
+    branches: [main, beta, chore/*, fix/*, feat/*]
+  pull_request:
+    types: [opened]
+    branches: [main, beta]
+
+jobs:
+  build:
+    name: e2e tests
+
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+
+      - name: Gatsby cache
+        uses: actions/cache@v3
+        id: gatsby-cache
+        with:
+          path: |
+            ./examples/host/.cache
+            ./examples/host/public
+            ./examples/remote/.cache
+            ./examples/remote/public
+          key: gatsby-${{ runner.os }}
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          record: false
+          command: yarn workspace e2e test:develop
+
+      - name: Store e2e artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: e2e-develop-artifact
+          path: ./packages/e2e/cypress
+          group: Platform ${{ matrix.platform }}
+          cache-key: e2e-develop-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -97,7 +97,7 @@ It changes some settings in the Webpack config so the Module Federation Webpack 
 
 This package is using [semantic-release](https://github.com/semantic-release/semantic-release) – so please follow the commit message decoration principles.
 
-- e.g. run a build in watch mode (re-build on file changes): `yarn watch`
+- e.g. run a build in watch mode (re-build on file changes): `yarn watch:all`
 - e.g. run build the TypeScript on file changes: `yarn workspace gatsby-plugin-federation watch`
 - e.g. run the tests like on the CI: `yarn workspace e2e test:ci`
 - e.g. run the tests in watch mode: `yarn workspace e2e test:watch` (you would need to run the projects in either development or production first)

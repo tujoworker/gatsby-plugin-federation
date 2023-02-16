@@ -2,7 +2,7 @@ name: Release
 
 on:
   workflow_run:
-    workflows: ['e2e']
+    workflows: ['e2e-develop', 'e2e-production', 'e2e-production-disabled-ssr']
     branches: [main, beta]
     types:
       - completed
