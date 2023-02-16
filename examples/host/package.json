@@ -8,6 +8,9 @@
     "serve": "gatsby serve --port 8001",
     "clean": "gatsby clean"
   },
+  "browserslist": [
+    "supports es6-module"
+  ],
   "dependencies": {
     "gatsby": "5.5.0",
     "react": "18.2.0",
