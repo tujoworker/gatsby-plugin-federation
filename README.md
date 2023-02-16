@@ -1,8 +1,16 @@
 # Gatsby Plugin for enabling Module Federation
 
-This Plugin enables Webpack Module Federation, without any sidecar or special solution.
+This Plugin enables Webpack Module Federation, without any sidecar or special solutions.
 
+- Supports development and production modes
 - Supports SSG/SSR – streaming modules during build time (`ssr: true`)
+
+### Run the examples
+
+- clone this repo and run yarn install.
+- run Gatsby in development: `yarn start`
+- or a build: `yarn build && yarn serve`
+- and visit http://localhost:8001/ and http://localhost:8002/
 
 ## How to use
 
@@ -18,15 +26,15 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
         ssr: false, // If true, the remotes will be requested during SSG (SSR)
         federationConfig: {
           // A. For your Remote
-          name: 'my-host',
+          name: 'my-remote',
           exposes: {
             './Button': './src/components/RemoteButton',
           },
 
           // B. For your Host
-          name: 'my-remote',
+          name: 'my-host',
           remotes: {
-            remote: 'remote@http://localhost:8002/', // The location of the /public dir content
+            remote: 'remote@http://localhost:8002/', // where the content of /public is served
           },
         },
       },
@@ -37,6 +45,8 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
 
 ### Importing federated modules or components
 
+#### Method 1
+
 ```jsx
 import { Dynamic } from 'gatsby-plugin-federation'
 
@@ -44,6 +54,8 @@ const RemoteModule = Dynamic(() => import('my-remote/Button'))
 
 render(<RemoteModule fallback={<>Loading...</>} your-props />)
 ```
+
+#### Method 2
 
 You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
 
@@ -83,7 +95,9 @@ It changes some settings in the Webpack config so the Module Federation Webpack 
 
 ### Development
 
-- clone this repo and run yarn install.
-- run Gatsby in development: `yarn start`
-- or a build i watch mode: `yarn watch`
-- and visit http://localhost:8001/ and http://localhost:8002/
+This package is using [semantic-release](https://github.com/semantic-release/semantic-release) – so please follow the commit message decoration principles.
+
+- e.g. run a build in watch mode (re-build on file changes): `yarn watch`
+- e.g. run build the TypeScript on file changes: `yarn workspace gatsby-plugin-federation watch`
+- e.g. run the tests like on the CI: `yarn workspace e2e test:ci`
+- e.g. run the tests in watch mode: `yarn workspace e2e test:watch` (you would need to run the projects in either development or production first)

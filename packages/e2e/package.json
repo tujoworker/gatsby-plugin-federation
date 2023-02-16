@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
   "scripts": {
-    "start": "cypress open",
+    "test:watch": "cypress open",
     "test:ci": "yarn workspace gatsby-plugin-federation build && yarn test:develop && yarn clean && yarn test:production && yarn test:production:disabled-ssr",
     "clean": "yarn workspace host clean & yarn workspace remote clean",
     "remote:develop": "yarn workspace remote start",
