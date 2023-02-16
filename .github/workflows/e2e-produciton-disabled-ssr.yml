@@ -27,7 +27,7 @@ jobs:
 
       - name: Gatsby cache
         uses: actions/cache@v3
-        id: gatsby-cache
+        id: e2e-production-disabled-ssr-gatsby-cache
         with:
           path: |
             ./examples/host/.cache

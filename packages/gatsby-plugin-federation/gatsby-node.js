@@ -7,6 +7,20 @@ const { ModuleFederationPlugin } = container
 const filename = 'remoteEntry.js'
 const ssrDir = 'mf-ssr'
 
+exports.pluginOptionsSchema = ({ Joi }) => {
+  const federationConfig = Joi.object({
+    name: Joi.string().required(),
+    shared: Joi.object().optional(),
+    remotes: Joi.object().optional(),
+    exposes: Joi.object().optional(),
+  }).required()
+
+  return Joi.object({
+    ssr: Joi.boolean().optional(),
+    federationConfig,
+  })
+}
+
 exports.onCreateWebpackConfig = (
   { store, stage, getConfig, plugins, actions },
   { ssr, federationConfig }

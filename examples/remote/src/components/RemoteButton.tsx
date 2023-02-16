@@ -10,6 +10,7 @@ const RemoteButton = ({ onClick, text }: RemoteButtonProps = {}) => {
   // Just to see if React Hooks work on the remote
   React.useEffect(() => {
     console.log('RemoteButton test 🙌')
+    document.documentElement.setAttribute('data-remote-button-mounted', '1')
   }, [])
 
   const [count, setCount] = React.useState(1)
