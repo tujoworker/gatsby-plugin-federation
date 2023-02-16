@@ -2,17 +2,25 @@
 
 This Plugin enables Webpack Module Federation, without any sidecar or special solutions.
 
-- Supports development and production modes
-- Supports SSG/SSR – streaming modules during build time (`ssr: true`)
+## 🌟 Show your support
 
-### Run the examples
+Please, give [this Plugin](https://github.com/dnbexperience/gatsby-plugin-federation) a **start** on GitHub 🙏
+
+## ⚡️ Features
+
+- Makes it possible to share React Components from different Gatsby builds.
+- Supports SSG/SSR – streaming modules during build time (`ssr: true`).
+- Allow distributed deployments of federated applications.
+- Supports develop and production mode.
+
+### 🔥 Run the example
 
 - clone this repo and run yarn install.
 - run Gatsby in development: `yarn start`
-- or a build: `yarn build && yarn serve`
+- or make a build: `yarn build && yarn serve`
 - and visit http://localhost:8001/ and http://localhost:8002/
 
-## How to use
+## 🚀 How to use
 
 Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js` file:
 
@@ -47,6 +55,8 @@ Check out the possible `federationConfig` [options](https://webpack.js.org/plugi
 
 ### Importing federated modules or components
 
+This Plugins comes with a HOC to simplify the imports for federated components.
+
 #### Method 1
 
 ```jsx
@@ -78,7 +88,7 @@ const DynamicWrapper = () => {
 render(<DynamicWrapper />)
 ```
 
-# Requirements
+## Requirements
 
 This plugin requires at least:
 
@@ -95,7 +105,7 @@ Read more about [Module Federation](https://webpack.js.org/concepts/module-feder
 
 It changes some settings in the Webpack config so the Module Federation Webpack Plugin works without throwing an error.
 
-### Development
+### Development of this Plugin
 
 This package is using [semantic-release](https://github.com/semantic-release/semantic-release) – so please follow the commit message decoration principles.
 

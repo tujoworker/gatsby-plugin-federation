@@ -48,73 +48,43 @@ exports.onCreateWebpackConfig = (
   }
 
   /**
-   * Rename the app entry to use our own async boundary loader
+   * Rename the app entry to use our own async boundary loader.
+   * Here is a list of all of Gatsby entry points.
    */
-  if (stage === 'build-javascript') {
-    config.entry.app = createAsyncBoundaryEntry({
-      entry: config.entry.app,
-      store,
-    })
-  }
-  if (stage === 'develop') {
-    config.entry.commons = createAsyncBoundaryEntry({
-      entry: config.entry.commons,
-      store,
-    })
+  const entryPoints = ['polyfill', 'app', 'commons', 'render-page']
+  for (const name in config.entry) {
+    if (entryPoints.includes(name)) {
+      config.entry[name] = createAsyncBoundaryEntry({
+        entry: config.entry[name],
+        store,
+        exportBoundary: name === 'render-page',
+      })
+    }
   }
 
-  const { dependencies } = getPackageJson({ store })
+  /**
+   * Shared deps
+   */
+  const { shared: sharedFromOptions, ...restConfig } = federationConfig
+  const { shared } = sharedInternals({ store, sharedFromOptions })
 
-  const { shared: sharedConfig, ...restConfig } = federationConfig
+  const commonSettings = {
+    filename,
+    shared,
 
-  // Don't share all deps by default
-  const shared = { ...sharedConfig }
-
-  shared.react = {
-    singleton: true,
-    requiredVersion: dependencies['react'],
-    // eager: ssr,// not supported in SSR as of now
+    /**
+     * It should ensure the remote entry is a full copy of the webpack runtime,
+     * not just 2 functinos and needs another file for the base webpack runtime.
+     */
+    runtime: false,
   }
-  shared['react-dom'] = {
-    singleton: true,
-    requiredVersion: dependencies['react-dom'],
-    // eager: ssr,// not supported in SSR as of now
-  }
-
-  // Share internals
-  shared['@gatsbyjs/reach-router'] = {
-    singleton: true,
-    requiredVersion: false,
-  }
-  shared['@reach/router'] = {
-    singleton: true,
-    requiredVersion: false,
-  }
-  shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
-    singleton: true,
-    requiredVersion: false,
-  }
-  shared['@pmmmwh/react-refresh-webpack-plugin'] = {
-    singleton: true,
-    requiredVersion: false,
-  }
-
-  // shared['@babel/runtime'] = {
-  //   singleton: true,
-  //   requiredVersion: false,
-  // }
-  // shared['react-server-dom-webpack'] = {
-  //   singleton: true,
-  //   requiredVersion: false,
-  // }
-  // shared['webpack-hot-middleware'] = {
-  //   singleton: true,
-  //   requiredVersion: false,
-  // }
 
   if (stage === 'build-html' || stage === 'develop-html') {
     if (restConfig.remotes) {
       if (ssr && stage === 'build-html') {
+        /**
+         * Add remoteEntry.js to each remote
+         */
         for (const remote in restConfig.remotes) {
           restConfig.remotes[remote] = joinUrl(
             restConfig.remotes[remote].replace(filename, ''),
@@ -139,22 +109,18 @@ exports.onCreateWebpackConfig = (
       config.plugins.push(
         new UniversalFederationPlugin({
           ...restConfig,
+          ...commonSettings,
 
           isServer: true,
-          shared: undefined, // not supported in SSR as of now
-          filename,
           library: { type: 'commonjs-module' },
-
-          /**
-           * It should ensure the remote entry is a full copy of the webpack runtime,
-           * not just 2 functinos and needs another file for the base webpack runtime.
-           */
-          runtime: false,
         })
       )
     }
   } else if (stage === 'build-javascript' || stage === 'develop') {
     if (restConfig.remotes) {
+      /**
+       * Add remoteEntry.js to each remote
+       */
       for (const remote in restConfig.remotes) {
         restConfig.remotes[remote] = joinUrl(
           restConfig.remotes[remote].replace(filename, ''),
@@ -166,15 +132,7 @@ exports.onCreateWebpackConfig = (
     config.plugins.push(
       new ModuleFederationPlugin({
         ...restConfig,
-
-        shared,
-        filename,
-
-        /**
-         * It should ensure the remote entry is a full copy of the webpack runtime,
-         * not just 2 functinos and needs another file for the base webpack runtime.
-         */
-        runtime: false,
+        ...commonSettings,
       })
     )
   }
@@ -236,6 +194,15 @@ exports.onCreateWebpackConfig = (
     }
   }
 
+  // DEV: Removes all junks and leave only one package
+  // config.optimization.splitChunks = false
+
+  // DEV: Do not create source maps
+  // config.devtool = false
+
+  // DEV: Do not minify the bundles
+  // config.optimization.minimize = false
+
   actions.replaceWebpackConfig(config)
 }
 
@@ -292,7 +259,7 @@ function getPackageJson({ store }) {
   return {}
 }
 
-function createAsyncBoundaryEntry({ entry, store }) {
+function createAsyncBoundaryEntry({ entry, store, exportBoundary = false }) {
   const state = store.getState()
   const cacheDir = path.join(state.program.directory, '.cache')
   const isArray = Array.isArray(entry)
@@ -302,7 +269,13 @@ function createAsyncBoundaryEntry({ entry, store }) {
   const createFile = (file) => {
     const name = file.match(new RegExp('.*' + nameRegExp))[1]
     const destAppFile = path.join(cacheDir, `${name}-loader.js`)
-    fs.writeFileSync(destAppFile, `import('./${name}.js')`, 'utf8')
+    fs.writeFileSync(
+      destAppFile,
+      exportBoundary
+        ? `export default async (...args) => ((await import('./${name}.js')).default(...args))`
+        : `import('./${name}.js')`,
+      'utf8'
+    )
   }
 
   const renameEntry = (file) => {
@@ -315,6 +288,54 @@ function createAsyncBoundaryEntry({ entry, store }) {
   })
 
   return isArray ? asyncEntries : asyncEntries[0]
+}
+
+function sharedInternals({ store, sharedFromOptions }) {
+  const { dependencies } = getPackageJson({ store })
+
+  const shared = { ...sharedFromOptions }
+
+  shared.react = {
+    singleton: true,
+    requiredVersion: dependencies['react'],
+  }
+  shared['react-dom'] = {
+    singleton: true,
+    requiredVersion: dependencies['react-dom'],
+  }
+
+  // Share internals
+  shared['@gatsbyjs/reach-router'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+  shared['@reach/router'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+  shared['@pmmmwh/react-refresh-webpack-plugin'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+  shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+
+  // shared['@babel/runtime'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
+  // shared['react-server-dom-webpack'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
+  // shared['webpack-hot-middleware'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
+
+  return { shared }
 }
 
 function joinUrl(...urls) {
