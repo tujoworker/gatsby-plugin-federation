@@ -15,7 +15,7 @@ Please, give [this Plugin](https://github.com/dnbexperience/gatsby-plugin-federa
 
 ### 🔥 Run the example
 
-- clone this repo and run yarn install.
+- clone this repo and run `yarn install`
 - run Gatsby in development: `yarn start`
 - or make a build: `yarn build && yarn serve`
 - and visit http://localhost:8001/ and http://localhost:8002/
