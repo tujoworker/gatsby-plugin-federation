@@ -9,7 +9,7 @@ Please, give [this Plugin](https://github.com/dnbexperience/gatsby-plugin-federa
 ## ⚡️ Features
 
 - Makes it possible to share React Components from different Gatsby builds.
-- Supports SSG/SSR – streaming modules during build time (`ssr: true`).
+- Supports SSG/SSR – fetching modules during build time (`ssr: true`).
 - Allow distributed deployments of federated applications.
 - Supports develop and production mode.
 
@@ -22,34 +22,36 @@ Please, give [this Plugin](https://github.com/dnbexperience/gatsby-plugin-federa
 
 ## 🚀 How to use
 
-Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js` file:
+Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.ts` file:
 
 ```js
-// gatsby-config.js
-{
+// gatsby-config.ts
+export default {
   plugins: [
     {
       resolve: 'gatsby-plugin-federation',
       options: {
-        ssr: false, // If true, the remotes will be requested during SSG (SSR)
+        ssr: false, // If true, the remotes will be fetchd during SSG (SSR)
         federationConfig: {
           // A. For your Remote
-          name: 'my-remote',
+          name: 'myRemote',
           exposes: {
             './Button': './src/components/RemoteButton',
           },
 
           // B. For your Host
-          name: 'my-host',
+          name: 'myHost',
           remotes: {
             remote: 'remote@http://localhost:8002/', // where the content of /public is served
           },
         },
       },
     },
-  ]
+  ],
 }
 ```
+
+PS: If you are using (.js) `gatsby-config.js` – then you need to use `module.exports = ` instead of `export default`.
 
 Check out the possible `federationConfig` [options](https://webpack.js.org/plugins/module-federation-plugin/).
 
