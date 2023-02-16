@@ -1,4 +1,4 @@
-import { HostHtmlSSR, HostHydration } from './SharedHostTests'
+import { HostHtmlNoSSR, HostHydration } from './SharedHostTests'
 
 Cypress.config({
   baseUrl: 'http://localhost:8001/',
@@ -9,7 +9,7 @@ describe('host-html', () => {
     cy.visitAsHtml('/')
   })
 
-  HostHtmlSSR()
+  HostHtmlNoSSR()
 })
 
 describe('host-hydration /vanilla', () => {
@@ -31,7 +31,7 @@ describe('host-html /vanilla', () => {
     cy.visitAsHtml('/vanilla')
   })
 
-  HostHtmlSSR()
+  HostHtmlNoSSR()
 })
 
 describe('host-hydration /vanilla', () => {
