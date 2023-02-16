@@ -2033,6 +2033,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@module-federation/node@npm:0.11.1":
+  version: 0.11.1
+  resolution: "@module-federation/node@npm:0.11.1"
+  dependencies:
+    "@module-federation/utilities": 1.3.0
+    encoding: 0.1.13
+    node-fetch: 2.6.7
+  peerDependencies:
+    next: ^12||^13
+    react: ^16||^17||^18
+    react-dom: ^16||^17||^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 12b1f11b6812bd3dc6d648eb7a5c73724d809932fafac030d1981ab52580e73f56805f087a05645a7fd95997497dfae4e5537fadd30722f2605ba19692d4d8e6
+  languageName: node
+  linkType: hard
+
+"@module-federation/utilities@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@module-federation/utilities@npm:1.3.0"
+  peerDependencies:
+    next: ^12 || ^13
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 29b283a9f66a26b9839f529186e0e6d7480a4940fb2f75492571535ae429d7f814df7a8c32ae5e0658df89377c302c8babbf3129d3cc6926c119ee1363fa8033
+  languageName: node
+  linkType: hard
+
 "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.0":
   version: 3.0.0
   resolution: "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.0"
@@ -2882,9 +2924,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@preconstruct/cli@npm:^2.2.2":
-  version: 2.3.0
-  resolution: "@preconstruct/cli@npm:2.3.0"
+"@preconstruct/cli@npm:2.2.2":
+  version: 2.2.2
+  resolution: "@preconstruct/cli@npm:2.2.2"
   dependencies:
     "@babel/code-frame": ^7.5.5
     "@babel/core": ^7.7.7
@@ -2925,7 +2967,7 @@ __metadata:
     v8-compile-cache: ^2.1.1
   bin:
     preconstruct: bin.js
-  checksum: 68a4cbfbda724c8aaee1220ac2dd9df8fbecca285ee21051298d189f7e17a05b8ed6611e515219395a09a41bceb63323af2bbe0bcca2b9f18bfd9a146a5faa2f
+  checksum: 6cc89bd472d7d95dc97e447f6b01923217bdc7af8b7361183c33904018600d30daa5956d79bdbfe54fdbd5b17b8b70f4ca62f6f9fc9daa0c8234558438721acf
   languageName: node
   linkType: hard
 
@@ -5969,6 +6011,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-env@npm:7.0.3":
+  version: 7.0.3
+  resolution: "cross-env@npm:7.0.3"
+  dependencies:
+    cross-spawn: ^7.0.1
+  bin:
+    cross-env: src/bin/cross-env.js
+    cross-env-shell: src/bin/cross-env-shell.js
+  checksum: 26f2f3ea2ab32617f57effb70d329c2070d2f5630adc800985d8b30b56e8bf7f5f439dd3a0358b79cee6f930afc23cf8e23515f17ccfb30092c6b62c6b630a79
+  languageName: node
+  linkType: hard
+
 "cross-fetch@npm:^3.1.5":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
@@ -5991,7 +6045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+"cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-spawn@npm:7.0.3"
   dependencies:
@@ -6746,6 +6800,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "e2e@workspace:packages/e2e"
   dependencies:
+    cross-env: 7.0.3
     cypress: 12.5.1
     start-server-and-test: 1.15.4
   languageName: unknown
@@ -6803,7 +6858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"encoding@npm:^0.1.13":
+"encoding@npm:0.1.13, encoding@npm:^0.1.13":
   version: 0.1.13
   resolution: "encoding@npm:0.1.13"
   dependencies:
@@ -8142,7 +8197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0":
+"fs-extra@npm:11.1.0, fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0":
   version: 11.1.0
   resolution: "fs-extra@npm:11.1.0"
   dependencies:
@@ -8391,26 +8446,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-federation@npm:*":
-  version: 1.2.0
-  resolution: "gatsby-plugin-federation@npm:1.2.0"
-  peerDependencies:
-    gatsby: ">=4"
-    react: ">=17"
-  checksum: 7bc37f94a3f8a65500c65666b5bcb69ca88ad0fdd755f538a9a238342d0be48ee0742be4180d4f5b228cba5eb9ee88fe4fc5430ba62b1913d00abd5ba1133dd0
-  languageName: node
-  linkType: hard
-
 "gatsby-plugin-federation@workspace:packages/gatsby-plugin-federation":
   version: 0.0.0-use.local
   resolution: "gatsby-plugin-federation@workspace:packages/gatsby-plugin-federation"
   dependencies:
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@preconstruct/cli": ^2.2.2
+    "@module-federation/node": 0.11.1
+    "@preconstruct/cli": 2.2.2
     "@types/react": 18.0.27
+    fs-extra: 11.1.0
     semantic-release: 20.1.0
-    typescript: ^4.9.4
+    typescript: 4.9.4
   peerDependencies:
     gatsby: ">=4"
     react: ">=17"
@@ -9250,7 +9297,6 @@ __metadata:
   resolution: "host@workspace:examples/host"
   dependencies:
     gatsby: 5.5.0
-    gatsby-plugin-federation: "*"
     gatsby-plugin-sass: 6.5.0
     nodemon: 2.0.20
     react: 18.2.0
@@ -14355,7 +14401,6 @@ __metadata:
   resolution: "remote@workspace:examples/remote"
   dependencies:
     gatsby: 5.5.0
-    gatsby-plugin-federation: "*"
     gatsby-plugin-sass: 6.5.0
     nodemon: 2.0.20
     react: 18.2.0
@@ -16307,23 +16352,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.9.4":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
+"typescript@npm:4.9.4":
+  version: 4.9.4
+  resolution: "typescript@npm:4.9.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
+  checksum: e782fb9e0031cb258a80000f6c13530288c6d63f1177ed43f770533fdc15740d271554cdae86701c1dd2c83b082cea808b07e97fd68b38a172a83dbf9e0d0ef9
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"
+"typescript@patch:typescript@4.9.4#~builtin<compat/typescript>":
+  version: 4.9.4
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=23ec76"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: ab417a2f398380c90a6cf5a5f74badd17866adf57f1165617d6a551f059c3ba0a3e4da0d147b3ac5681db9ac76a303c5876394b13b3de75fdd5b1eaa06181c9d
+  checksum: 3e2ab0772908676d9b9cb83398c70003a3b08e1c6b3b122409df9f4b520f2fdaefa20c3d7d57dce283fed760ac94b3ce94d4a7fa875127b67852904425a1f0dc
   languageName: node
   linkType: hard
 

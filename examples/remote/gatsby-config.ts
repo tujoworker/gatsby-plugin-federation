@@ -4,6 +4,7 @@ export default {
     {
       resolve: 'gatsby-plugin-federation',
       options: {
+        ssr: process.env.MF_SSR !== 'false',
         federationConfig: {
           name: 'remote',
           exposes: {

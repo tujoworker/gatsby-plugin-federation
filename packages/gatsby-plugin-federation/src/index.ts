@@ -1,1 +1,1 @@
-export { ClientOnly } from './ClientOnly'
+export { Dynamic } from './Dynamic'
