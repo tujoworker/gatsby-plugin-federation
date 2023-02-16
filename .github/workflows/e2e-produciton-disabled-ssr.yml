@@ -1,4 +1,4 @@
-name: e2e # NB: The name is used in workflow_run
+name: e2e-production-disabled-ssr # NB: The name is used in workflow_run
 
 on:
   push:
@@ -40,15 +40,15 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           record: false
-          command: yarn workspace e2e test:ci
+          command: yarn workspace e2e test:production:disabled-ssr
 
       - name: Store e2e artifacts
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: e2e-artifact
+          name: e2e-production-disabled-ssr-artifact
           path: ./packages/e2e/cypress
           group: Platform ${{ matrix.platform }}
-          cache-key: e2e-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          cache-key: e2e-production-disabled-ssr-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -6,8 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "watch": "yarn workspace gatsby-plugin-federation watch & yarn workspace host watch & yarn workspace remote watch & yarn serve",
-    "start": "yarn workspace gatsby-plugin-federation watch & yarn workspace host start & yarn workspace remote start",
+    "watch": "yarn workspace gatsby-plugin-federation watch",
+    "watch:all": "yarn watch & yarn workspace host watch & yarn workspace remote watch & yarn serve",
+    "start": "yarn watch & yarn workspace host start & yarn workspace remote start",
     "build": "yarn workspace gatsby-plugin-federation build & yarn workspace host build & yarn workspace remote build",
     "serve": "yarn workspace host serve & yarn workspace remote serve",
     "clean": "yarn workspace host clean & yarn workspace remote clean",

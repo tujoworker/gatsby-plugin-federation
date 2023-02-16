@@ -7,17 +7,18 @@
   "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
   "scripts": {
     "test:watch": "cypress open",
-    "test:ci": "yarn workspace gatsby-plugin-federation build && yarn test:develop && yarn clean && yarn test:production && yarn test:production:disabled-ssr",
+    "test:ci": "yarn build-plugin && yarn test:develop && yarn clean && yarn test:production && yarn test:production:disabled-ssr",
     "clean": "yarn workspace host clean & yarn workspace remote clean",
+    "build-plugin": "yarn workspace gatsby-plugin-federation build",
     "remote:develop": "yarn workspace remote start",
     "remote:production": "yarn workspace remote build && yarn workspace remote serve",
     "host:develop": "yarn workspace host start",
     "host:production": "yarn workspace host build && yarn workspace host serve",
-    "test:develop": "start-server-and-test remote:develop 8002 host:develop 8001 test:develop:run",
+    "test:develop": "yarn build-plugin && start-server-and-test remote:develop 8002 host:develop 8001 test:develop:run",
     "test:develop:run": "cypress run --record false --spec '**/*-develop.cy.ts'",
-    "test:production": "start-server-and-test remote:production 8002 host:production 8001 test:production:run",
+    "test:production": "yarn build-plugin && start-server-and-test remote:production 8002 host:production 8001 test:production:run",
     "test:production:run": "cypress run --record false --spec '**/*-production.cy.ts'",
-    "test:production:disabled-ssr": "cross-env MF_SSR=false start-server-and-test remote:production 8002 host:production 8001 test:production:disabled-ssr:run",
+    "test:production:disabled-ssr": "yarn build-plugin && cross-env MF_SSR=false start-server-and-test remote:production 8002 host:production 8001 test:production:disabled-ssr:run",
     "test:production:disabled-ssr:run": "cypress run --record false --spec '**/*-production-disabled-ssr.cy.ts'"
   },
   "devDependencies": {

@@ -66,12 +66,34 @@ exports.onCreateWebpackConfig = (
     requiredVersion: dependencies['react-dom'],
     // eager: ssr,// not supported in SSR as of now
   }
+
+  // Share internals
   shared['@gatsbyjs/reach-router'] = {
     singleton: true,
     requiredVersion: false,
-    // eager: ssr,// not supported in SSR as of now
   }
-  // shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
+  shared['@reach/router'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+  shared['@gatsbyjs/react-refresh-webpack-plugin'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+  shared['@pmmmwh/react-refresh-webpack-plugin'] = {
+    singleton: true,
+    requiredVersion: false,
+  }
+
+  // shared['@babel/runtime'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
+  // shared['react-server-dom-webpack'] = {
+  //   singleton: true,
+  //   requiredVersion: false,
+  // }
+  // shared['webpack-hot-middleware'] = {
   //   singleton: true,
   //   requiredVersion: false,
   // }
