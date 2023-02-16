@@ -40,9 +40,9 @@ Install `yarn add gatsby-plugin-federation` and add it to your `gatsby-config.js
 ```jsx
 import { Dynamic } from 'gatsby-plugin-federation'
 
-const RemoteModule = () => import('my-remote/Button')
+const RemoteModule = Dynamic(() => import('my-remote/Button'))
 
-render(<Dynamic module={RemoteModule} fallback="Loading..." props={{}} />)
+render(<RemoteModule fallback={<>Loading...</>} your-props />)
 ```
 
 You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
@@ -50,7 +50,7 @@ You could use the vanilla method of importing the shared component, but you woul
 ```jsx
 const RemoteModule = React.lazy(() => import('my-remote/Button'))
 
-const CustomDynamic = () => {
+const DynamicWrapper = () => {
   if (!globalThis.MF_SSR && typeof document === 'undefined') {
     return <>loading...</>
   }
@@ -61,7 +61,7 @@ const CustomDynamic = () => {
   )
 }
 
-render(<CustomDynamic />)
+render(<DynamicWrapper />)
 ```
 
 # Requirements

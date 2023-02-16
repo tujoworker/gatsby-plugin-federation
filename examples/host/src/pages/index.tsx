@@ -3,7 +3,7 @@ import { Link } from 'gatsby'
 import { Dynamic } from 'gatsby-plugin-federation'
 import HostButton from '../components/HostButton'
 
-const RemoteModule = () => import('remote/Button')
+const RemoteModule = Dynamic(() => import('remote/Button'))
 
 const App = () => {
   const [count, setCount] = React.useState(1)
@@ -12,13 +12,10 @@ const App = () => {
     <>
       <h1>Host App</h1>
       <HostButton onClick={handleClick} />{' '}
-      <Dynamic
+      <RemoteModule
         fallback={<p role="status">Loading...</p>}
-        module={RemoteModule}
-        props={{
-          onClick: handleClick,
-          text: `Remote Button ${count} 🙌`,
-        }}
+        onClick={handleClick}
+        text={`Remote Button ${count} 🙌`}
       />{' '}
       Check out the <Link to="/vanilla">Vanilla</Link> solution.
     </>
