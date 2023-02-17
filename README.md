@@ -10,7 +10,7 @@ Please, give [this Plugin](https://github.com/dnbexperience/gatsby-plugin-federa
 
 - Makes it possible to share React Components from different Gatsby builds.
 - Supports SSG/SSR – fetching modules during build time (`ssr: true`).
-- Allow distributed deployments of federated applications.
+- Allows distributed deployments of federated applications.
 - Supports develop and production mode.
 
 ### 🔥 Run the example
@@ -31,7 +31,7 @@ export default {
     {
       resolve: 'gatsby-plugin-federation',
       options: {
-        ssr: false, // If true, the remotes will be fetchd during SSG (SSR)
+        ssr: true, // If true, the remotes will be fetched during SSG (SSR)
         federationConfig: {
           // A. For your Remote
           name: 'myRemote',
@@ -51,9 +51,9 @@ export default {
 }
 ```
 
-PS: If you are using (.js) `gatsby-config.js` – then you need to use `module.exports = ` instead of `export default`.
-
 Check out the possible `federationConfig` [options](https://webpack.js.org/plugins/module-federation-plugin/).
+
+PS: If you use (.js) `gatsby-config.js` – then you need to use `module.exports = ` instead of `export default`.
 
 ### Importing federated modules or components
 
@@ -64,24 +64,24 @@ This Plugins comes with a HOC to simplify the imports for federated components.
 ```jsx
 import { Dynamic } from 'gatsby-plugin-federation'
 
-const RemoteModule = Dynamic(() => import('my-remote/Button'))
+const RemoteModule = Dynamic(() => import('remote/Button'))
 
 render(<RemoteModule fallback={<>Loading...</>} your-props />)
 ```
 
 #### Method 2
 
-You could use the vanilla method of importing the shared component, but you would need to ensure that `React.Suspense` does not render on the server:
+You can use the React lazy method to import shared components as well:
 
 ```jsx
-const RemoteModule = React.lazy(() => import('my-remote/Button'))
+const RemoteModule = React.lazy(() => import('remote/Button'))
 
 const DynamicWrapper = () => {
   if (!globalThis.MF_SSR && typeof document === 'undefined') {
     return <>loading...</>
   }
   return (
-    <React.Suspense fallback="loading...">
+    <React.Suspense fallback={<>Loading...</>}>
       <RemoteModule />
     </React.Suspense>
   )
@@ -105,7 +105,7 @@ Read more about [Module Federation](https://webpack.js.org/concepts/module-feder
 
 ## How this Plugin works
 
-It changes some settings in the Webpack config so the Module Federation Webpack Plugin works without throwing an error.
+It adds async boundaries to the entry files and changes some settings in the Webpack config so the Module Federation Webpack Plugin works without throwing an error.
 
 ### Development of this Plugin
 
