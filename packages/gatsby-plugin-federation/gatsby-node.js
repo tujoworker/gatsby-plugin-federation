@@ -23,7 +23,7 @@ exports.pluginOptionsSchema = ({ Joi }) => {
 
 exports.onCreateWebpackConfig = (
   { store, stage, getConfig, plugins, actions },
-  { ssr, federationConfig }
+  { ssr = true, federationConfig }
 ) => {
   const config = getConfig()
 
