@@ -21,6 +21,8 @@ exports.pluginOptionsSchema = ({ Joi }) => {
   })
 }
 
+const collectedStyles = {}
+
 exports.onCreateWebpackConfig = (
   { store, stage, getConfig, plugins, actions },
   { ssr = true, federationConfig }
@@ -102,7 +104,37 @@ exports.onCreateWebpackConfig = (
       }
     }
 
+    for (let i = 1; i <= 10; i++) {
+      config.resolve.alias[`gmf${i}`] = false
+    }
+
     if (ssr && stage === 'build-html') {
+      if (federationConfig?.exposes) {
+        const state = store.getState()
+        const destDir = path.join(state.program.directory, 'public', ssrDir)
+        const dataFile = path.join(destDir, 'gmfData.js')
+
+        const data = JSON.stringify({
+          name: restConfig.name,
+          styles: Object.values(collectedStyles),
+        })
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir)
+        }
+        fs.writeFileSync(dataFile, `export default ${data}`, 'utf8')
+
+        restConfig.exposes[`./gmfData`] = `./public/${ssrDir}/gmfData.js`
+      }
+
+      if (federationConfig?.remotes) {
+        let count = 1
+        for (const remote in federationConfig.remotes) {
+          federationConfig.remotes[`gmf${count}`] =
+            federationConfig.remotes[remote]
+          count++
+        }
+      }
+
       // Remove parts we do not need
       config.target = false
 
@@ -142,6 +174,10 @@ exports.onCreateWebpackConfig = (
       'globalThis.MF_SSR': ssr,
     })
   )
+
+  if (stage === 'build-javascript' && federationConfig?.exposes) {
+    config.plugins.push(new GetChunksPlugin())
+  }
 
   if (stage === 'develop' && federationConfig?.exposes) {
     /**
@@ -272,8 +308,8 @@ function createAsyncBoundaryEntry({ entry, store, exportBoundary = false }) {
     fs.writeFileSync(
       destAppFile,
       exportBoundary
-        ? `export default async (...args) => ((await import('./${name}.js')).default(...args))`
-        : `import('./${name}.js')`,
+        ? `export default async (...args) => ((await import('./${name}')).default(...args))`
+        : `import('./${name}')`,
       'utf8'
     )
   }
@@ -343,4 +379,26 @@ function joinUrl(...urls) {
     .join('/')
     .replace(/\/{1,}/g, '/')
     .replace(/:\//g, '://')
+}
+
+class GetChunksPlugin {
+  apply(compiler) {
+    compiler.hooks.done.tap('GetFilesPlugin', (stats) => {
+      const statsData = stats.compilation.getStats().toJson({
+        all: false,
+        assets: true,
+        cachedAssets: true,
+        ids: true,
+        publicPath: true,
+      })
+
+      statsData.assets
+        .filter(({ name }) => {
+          return name.endsWith('.css')
+        })
+        .forEach(({ name }) => {
+          collectedStyles[name] = name
+        })
+    })
+  }
 }

@@ -53,7 +53,7 @@ export default {
 
 Check out the possible `federationConfig` [options](https://webpack.js.org/plugins/module-federation-plugin/).
 
-PS: If you use (.js) `gatsby-config.js` – then you need to use `module.exports = ` instead of `export default`.
+> 👉 **Note:** If you use (.js) `gatsby-config.js` – then you need to use `module.exports = ` instead of `export default`.
 
 ### Importing federated modules or components
 
