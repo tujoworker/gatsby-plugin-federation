@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
-  "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
+  "author": "Tobias Høegh <tobias@tujo.no>",
   "scripts": {
     "test:watch": "cypress open",
     "test:ci": "yarn build-plugin && yarn test:develop && yarn clean && yarn test:production && yarn test:production:disabled-ssr",

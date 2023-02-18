@@ -1,5 +1,5 @@
 {
-  "exec": "yarn build --no-uglify",
+  "exec": "gatsby build --no-uglify",
   "ignoreRoot": [".git"],
   "ignore": ["**/.cache/**", "**/public/**"],
   "ext": "*.js,*.ts,*.tsx"
