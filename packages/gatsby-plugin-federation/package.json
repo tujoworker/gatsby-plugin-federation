@@ -9,7 +9,7 @@
   ],
   "description": "Gatsby Plugin for enabling Module Federation",
   "license": "MIT",
-  "author": "Tobias Høegh <tobias.hoegh@dnb.no>",
+  "author": "Tobias Høegh <tobias@tujo.no>",
   "repository": {
     "type": "git",
     "url": "https://github.com/dnbexperience/gatsby-plugin-federation.git"
