@@ -9,10 +9,13 @@
     "watch": "yarn workspace gatsby-plugin-federation watch",
     "watch:all": "yarn watch & yarn workspace host watch & yarn workspace remote watch & yarn serve",
     "start": "yarn watch & yarn workspace host start & yarn workspace remote start",
-    "build": "yarn workspace gatsby-plugin-federation build & yarn workspace host build & yarn workspace remote build",
+    "build": "yarn workspace gatsby-plugin-federation build && yarn workspace remote build && yarn workspace remote serve & yarn workspace host build && kill-port 8002",
     "serve": "yarn workspace host serve & yarn workspace remote serve",
     "clean": "yarn workspace host clean & yarn workspace remote clean",
     "release": "yarn workspace gatsby-plugin-federation release"
+  },
+  "devDependencies": {
+    "kill-port": "2.0.1"
   },
   "engines": {
     "node": "18.13.0",
