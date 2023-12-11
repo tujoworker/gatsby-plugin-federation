@@ -4,7 +4,7 @@ This Plugin enables Webpack Module Federation, without any sidecar or special so
 
 ## 🌟 Show your support
 
-Please, give [this Plugin](https://github.com/tujoworker/gatsby-plugin-federation) a **start** on GitHub 🙏
+Please, give [this Plugin](https://github.com/tujoworker/gatsby-plugin-federation) a **star** on GitHub 🙏
 
 ## ⚡️ Features
 
